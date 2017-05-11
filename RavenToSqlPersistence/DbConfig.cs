@@ -10,9 +10,9 @@ using Raven.Client.Document;
 
 namespace RavenToSqlPersistence
 {
-    static class Configuration
+    static class DbConfig
     {
-        public static DocumentStore RavenDB(string endpointName)
+        public static DocumentStore ConfigureRavenDB()
         {
             var docStore = new DocumentStore()
             {
@@ -25,7 +25,7 @@ namespace RavenToSqlPersistence
             return docStore;
         }
 
-        public static void SqlPersistence(EndpointConfiguration endpointConfiguration)
+        public static void ConfigureSqlPersistence(EndpointConfiguration endpointConfiguration)
         {
             var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
             var connectionStr = @"Data Source=.\SQLEXPRESS;Initial Catalog=RavenToSqlPersistence;Integrated Security=True";

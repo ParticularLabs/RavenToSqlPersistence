@@ -13,18 +13,7 @@ using Raven.Client.Document;
 
 public class SubscriptionConverter
 {
-    private readonly string endpointName;
-    private readonly DocumentStore docStore;
-    private readonly ISubscriptionStorage persister;
-
-    public SubscriptionConverter(string endpointName, DocumentStore docStore, IBuilder builder)
-    {
-        this.endpointName = endpointName;
-        this.docStore = docStore;
-        this.persister = builder.Build<ISubscriptionStorage>();
-    }
-
-    public async Task Run()
+    public static async Task ConvertSubscriptions(DocumentStore docStore)
     {
         var list = new List<Subscription>();
         using (var session = docStore.OpenAsyncSession())
@@ -33,22 +22,14 @@ public class SubscriptionConverter
             list.AddRange(batch);
         }
 
-        var mine = list
-            .Where(sub => sub.Subscribers.Any(EndpointMatches))
-            .ToList();
-
-        foreach (var sub in mine)
+        foreach (var sub in list)
         {
-            foreach (var client in sub.Subscribers.Where(EndpointMatches))
+            foreach (var client in sub.Subscribers)
             {
                 var newSubscriber = new Subscriber(client.TransportAddress, client.Endpoint);
-                await persister.Subscribe(newSubscriber, sub.MessageType, new ContextBag());
+                var proxy = EndpointProxy.GetProxy(client.Endpoint);
+                await proxy.SubscriptionStorage.Subscribe(newSubscriber, sub.MessageType, new ContextBag());
             }
         }
-    }
-
-    private bool EndpointMatches(SubscriptionClient client)
-    {
-        return string.Equals(endpointName, client.Endpoint, StringComparison.InvariantCultureIgnoreCase);
     }
 }

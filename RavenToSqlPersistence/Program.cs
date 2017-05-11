@@ -18,7 +18,7 @@ namespace RavenToSqlPersistence
     {
         static void Main(string[] args)
         {
-            string endpointName = "TestEndoint";
+            string endpointName = "RavenToSqlPersistence";
             try
             {
                 RunAsync(endpointName).GetAwaiter().GetResult();
@@ -55,7 +55,7 @@ namespace RavenToSqlPersistence
 
             var builder = GetBuilderFeature.Builder;
 
-            await new SubscriptionConverter(docStore, builder).Run();
+            await new SubscriptionConverter(endpointName, docStore, builder).Run();
         }
     }
 

@@ -62,7 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
-    <Compile Include="EndpointProxy.cs" />
+    <Compile Include="Utility\EndpointProxy.cs" />
     <Compile Include="FakeInfrastructure\FakeTimeoutPoller.cs" />
     <Compile Include="FakeInfrastructure\FakeTransport.cs" />
     <Compile Include="FakeInfrastructure\FakeTransportInfrastructure.cs" />
@@ -81,6 +81,7 @@
     <Compile Include="Subscriptions\SubscriptionConverter.cs" />
     <Compile Include="Timeouts\Timeout.cs" />
     <Compile Include="Timeouts\TimeoutConverter.cs" />
+    <Compile Include="Utility\RavenEnumerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

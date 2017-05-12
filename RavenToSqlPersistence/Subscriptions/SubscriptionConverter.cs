@@ -1,46 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using NServiceBus;
 using NServiceBus.Extensibility;
-using NServiceBus.ObjectBuilder;
 using NServiceBus.RavenDB.Persistence.SubscriptionStorage;
 using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
-using Raven.Client;
 using Raven.Client.Document;
+using RavenToSqlPersistence.Utility;
 
 static class SubscriptionConverter
 {
     public static async Task ConvertSubscriptions(DocumentStore docStore)
     {
-        var paging = new RavenPagingInformation();
-        int pageSize = 1024;
-
-        do
+        foreach (var subscription in docStore.AllDocumentsStartingWith<Subscription>(
+            Configuration.SubscriptionDocumentsStartWith, pageSize: 1024))
         {
-            using (var session = docStore.OpenAsyncSession())
-            {
-                var batch = await session.Advanced.LoadStartingWithAsync<Subscription>(Configuration.SubscriptionDocumentsStartWith,
-                    pagingInformation: paging, start: paging.NextPageStart, pageSize: pageSize);
-
-                await ConvertBatch(batch);
-            }
-        } while (!paging.IsLastPage());
+            await ConvertSubscription(subscription);
+        }
     }
 
-    private static async Task ConvertBatch(IEnumerable<Subscription> batch)
+    private static async Task ConvertSubscription(Subscription subscription)
     {
-        foreach (var sub in batch)
+        Console.WriteLine($"Converting subscriptions for {subscription.MessageType.TypeName}");
+        foreach (var client in subscription.Subscribers)
         {
-            Console.WriteLine($"Converting subscriptions for {sub.MessageType.TypeName}");
-            foreach (var client in sub.Subscribers)
-            {
-                var newSubscriber = new Subscriber(client.TransportAddress, client.Endpoint);
-                var proxy = EndpointProxy.GetProxy(client.Endpoint);
-                await proxy.SubscriptionStorage.Subscribe(newSubscriber, sub.MessageType, new ContextBag());
-            }
+            var newSubscriber = new Subscriber(client.TransportAddress, client.Endpoint);
+            var proxy = EndpointProxy.GetProxy(client.Endpoint);
+            await proxy.SubscriptionStorage.Subscribe(newSubscriber, subscription.MessageType, new ContextBag());
         }
     }
 }

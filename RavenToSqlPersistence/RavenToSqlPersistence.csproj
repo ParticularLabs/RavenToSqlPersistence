@@ -69,6 +69,8 @@
     <Compile Include="Subscriptions\Subscription.cs" />
     <Compile Include="Subscriptions\SubscriptionClient.cs" />
     <Compile Include="Subscriptions\SubscriptionConverter.cs" />
+    <Compile Include="Timeouts\Timeout.cs" />
+    <Compile Include="Timeouts\TimeoutConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

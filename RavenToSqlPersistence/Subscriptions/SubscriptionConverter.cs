@@ -11,24 +11,21 @@ using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
 using Raven.Client;
 using Raven.Client.Document;
 
-public class SubscriptionConverter
+static class SubscriptionConverter
 {
     public static async Task ConvertSubscriptions(DocumentStore docStore)
     {
-        var list = new List<Subscription>();
         using (var session = docStore.OpenAsyncSession())
         {
             var batch = await session.Advanced.LoadStartingWithAsync<Subscription>("Subscriptions/", start: 0, pageSize: 1024);
-            list.AddRange(batch);
-        }
-
-        foreach (var sub in list)
-        {
-            foreach (var client in sub.Subscribers)
+            foreach (var sub in batch)
             {
-                var newSubscriber = new Subscriber(client.TransportAddress, client.Endpoint);
-                var proxy = EndpointProxy.GetProxy(client.Endpoint);
-                await proxy.SubscriptionStorage.Subscribe(newSubscriber, sub.MessageType, new ContextBag());
+                foreach (var client in sub.Subscribers)
+                {
+                    var newSubscriber = new Subscriber(client.TransportAddress, client.Endpoint);
+                    var proxy = EndpointProxy.GetProxy(client.Endpoint);
+                    await proxy.SubscriptionStorage.Subscribe(newSubscriber, sub.MessageType, new ContextBag());
+                }
             }
         }
     }

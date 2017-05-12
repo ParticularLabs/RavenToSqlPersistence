@@ -5,6 +5,7 @@ using NServiceBus;
 using NServiceBus.Configuration.AdvanceExtensibility;
 using NServiceBus.Features;
 using NServiceBus.ObjectBuilder;
+using NServiceBus.Timeout.Core;
 using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
 using RavenToSqlPersistence;
 
@@ -43,8 +44,9 @@ class EndpointProxy
     {
         var endpointConfiguration = new EndpointConfiguration(endpointName);
         endpointConfiguration.UseTransport<MsmqTransport>();
-        endpointConfiguration.SendOnly();
+        //endpointConfiguration.SendOnly();
         endpointConfiguration.SendFailedMessagesTo("error");
+        endpointConfiguration.EnableFeature<TimeoutManager>();
 
         var builderHolder = new BuilderHolder();
         var settings = endpointConfiguration.GetSettings();
@@ -59,4 +61,5 @@ class EndpointProxy
     }
 
     public ISubscriptionStorage SubscriptionStorage => builder.Build<ISubscriptionStorage>();
+    public IPersistTimeouts TimeoutStorage => builder.Build<IPersistTimeouts>();
 }

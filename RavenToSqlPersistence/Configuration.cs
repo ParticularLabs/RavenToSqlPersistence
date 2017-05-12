@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,12 @@ static class Configuration
     {
         get
         {
-            yield return new SagaConversion("SagaDatas/", typeof(CreateRavenStuff.SagaData), "OrderId");
+            yield return new SagaConversion(
+                documentPrefix: "SagaDatas/", 
+                sagaDataType: typeof(CreateRavenStuff.SagaData), 
+                correlationId: "OrderId",
+                endpointName: "RavenToSqlPersistence",
+                sagaClassName: "MyFakeSaga");
         }
     }
 
@@ -35,16 +41,10 @@ static class Configuration
         return docStore;
     }
 
-    public static void ConfigureSqlPersistence(EndpointConfiguration endpointConfiguration)
+    public const SqlVariant DestinationSqlType = SqlVariant.MsSqlServer;
+
+    public static Func<DbConnection> CreateSqlConnection = () =>
     {
-        var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
-        var connectionStr = @"Data Source=.\SQLEXPRESS;Initial Catalog=RavenToSqlPersistence;Integrated Security=True";
-        persistence.SqlVariant(SqlVariant.MsSqlServer);
-        persistence.ConnectionBuilder(
-            connectionBuilder: () =>
-            {
-                return new SqlConnection(connectionStr);
-            });
-        persistence.SubscriptionSettings().DisableCache();
-    }
+        return new SqlConnection(@"Data Source=.\SQLEXPRESS;Initial Catalog=RavenToSqlPersistence;Integrated Security=True");
+    };
 }

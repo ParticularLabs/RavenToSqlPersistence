@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.Configuration.AdvanceExtensibility;
 using NServiceBus.ObjectBuilder;
+using NServiceBus.Persistence.Sql;
 using NServiceBus.Sagas;
 using NServiceBus.Timeout.Core;
 using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
@@ -62,8 +64,11 @@ class EndpointProxy
         var builderHolder = new BuilderHolder();
         var settings = endpointConfiguration.GetSettings();
         settings.Set<BuilderHolder>(builderHolder);
-        
-        Configuration.ConfigureSqlPersistence(endpointConfiguration);
+
+        var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
+        persistence.SqlVariant(Configuration.DestinationSqlType);
+        persistence.ConnectionBuilder(Configuration.CreateSqlConnection);
+        persistence.SubscriptionSettings().DisableCache();
 
         this.endpoint = await Endpoint.Start(endpointConfiguration)
             .ConfigureAwait(false);
@@ -78,5 +83,4 @@ class EndpointProxy
 
     public ISubscriptionStorage SubscriptionStorage => builder.Build<ISubscriptionStorage>();
     public IPersistTimeouts TimeoutStorage => builder.Build<IPersistTimeouts>();
-    public ISagaPersister SagaPersister => builder.Build<ISagaPersister>();
 }

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using NServiceBus.Logging;
 
 
 namespace RavenToSqlPersistence
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
@@ -28,6 +29,8 @@ namespace RavenToSqlPersistence
 
         static async Task RunAsync()
         {
+            CheckConfiguration();
+
             var docStore = Configuration.ConfigureRavenDb();
             docStore.Initialize();
 
@@ -35,6 +38,12 @@ namespace RavenToSqlPersistence
             await TimeoutConverter.ConvertTimeouts(docStore);
 
             await EndpointProxy.StopAll();
+        }
+
+        private static void CheckConfiguration()
+        {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            Configuration.SagaConversions.ToList();
         }
     }
 }

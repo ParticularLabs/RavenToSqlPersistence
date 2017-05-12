@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.Configuration.AdvanceExtensibility;
-using NServiceBus.Features;
 using NServiceBus.ObjectBuilder;
+using NServiceBus.Sagas;
 using NServiceBus.Timeout.Core;
 using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
 using RavenToSqlPersistence;
@@ -69,9 +69,6 @@ class EndpointProxy
             .ConfigureAwait(false);
 
         this.builder = builderHolder.Builder;
-
-        var testQuery = builder.Build<IQueryTimeouts>();
-        var testPersist = builder.Build<IPersistTimeouts>();
     }
 
     public async Task Stop()
@@ -81,4 +78,5 @@ class EndpointProxy
 
     public ISubscriptionStorage SubscriptionStorage => builder.Build<ISubscriptionStorage>();
     public IPersistTimeouts TimeoutStorage => builder.Build<IPersistTimeouts>();
+    public ISagaPersister SagaPersister => builder.Build<ISagaPersister>();
 }

@@ -14,11 +14,11 @@ static class Configuration
     public const string SubscriptionDocumentsStartWith = "Subscriptions/";
     public const string TimeoutDocumentsStartWith = "TimeoutDatas/";
 
-    public static IEnumerable<string> SagaPrefixesToConvert
+    public static IEnumerable<SagaConversion> SagaConversions
     {
         get
         {
-            yield return "SagaDatas/";
+            yield return new SagaConversion("SagaDatas/", typeof(CreateRavenStuff.SagaData), "OrderId");
         }
     }
 

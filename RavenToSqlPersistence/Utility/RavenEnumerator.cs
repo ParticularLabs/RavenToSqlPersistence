@@ -13,23 +13,28 @@ namespace RavenToSqlPersistence.Utility
     {
         public static IEnumerable<T> AllDocumentsStartingWith<T>(this DocumentStore docStore, string startingWith, int pageSize)
         {
-            var paging = new RavenPagingInformation();
-
-            do
+            foreach (var entity in AllDocumentsStartingWith(docStore, typeof(T), startingWith, pageSize))
             {
-                using (var session = docStore.OpenSession())
-                {
-                    var batch = session.Advanced.LoadStartingWith<T>(startingWith,
-                        pagingInformation: paging, 
-                        start: paging.NextPageStart, 
-                        pageSize: pageSize);
+                yield return (T) entity;
+            }
+        }
 
-                    foreach (var item in batch)
+        public static IEnumerable<object> AllDocumentsStartingWith(this DocumentStore docStore, Type documentType, string startingWith, int pageSize)
+        {
+
+            var paging = new RavenPagingInformation();
+            using (var session = (DocumentSession)docStore.OpenSession())
+            {
+                do
+                {
+                    var documents = docStore.DatabaseCommands.StartsWith(startingWith, null, paging.NextPageStart, pageSize, paging);
+                    foreach (var doc in documents)
                     {
-                        yield return item;
+                        object entity = session.ConvertToEntity(documentType, doc.Key, doc.DataAsJson, doc.Metadata);
+                        yield return entity;
                     }
-                }
-            } while (!paging.IsLastPage());
+                } while (!paging.IsLastPage());
+            }
         }
     }
 }

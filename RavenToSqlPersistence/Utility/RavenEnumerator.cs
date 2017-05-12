@@ -16,7 +16,7 @@ namespace RavenToSqlPersistence.Utility
         {
             using (var session = (DocumentSession)docStore.OpenSession())
             {
-                foreach (var doc in AllDocumentsStartingWith(docStore, typeof(T), startingWith, pageSize))
+                foreach (var doc in AllDocumentsStartingWith(docStore, startingWith, pageSize))
                 {
                     object entity = session.ConvertToEntity(typeof(T), doc.Key, doc.DataAsJson, doc.Metadata);
                     yield return (T)entity;
@@ -24,7 +24,7 @@ namespace RavenToSqlPersistence.Utility
             }
         }
 
-        public static IEnumerable<JsonDocument> AllDocumentsStartingWith(this DocumentStore docStore, Type documentType, string startingWith, int pageSize)
+        public static IEnumerable<JsonDocument> AllDocumentsStartingWith(this DocumentStore docStore, string startingWith, int pageSize)
         {
             var paging = new RavenPagingInformation();
 

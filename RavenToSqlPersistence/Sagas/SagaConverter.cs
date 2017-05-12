@@ -21,6 +21,7 @@ static class SagaConverter
     static SagaConverter()
     {
         var assembly = typeof(SqlPersistence).Assembly;
+        // ReSharper disable once AssignNullToNotNullAttribute
         var version = FileVersionInfo.GetVersionInfo(assembly.Location);
         PersistenceVersion = new Version(
             major: version.FileMajorPart,
@@ -39,7 +40,7 @@ static class SagaConverter
 
     private static async Task ConvertSagaType(DocumentStore docStore, SagaConversion conversion)
     {
-        foreach (var sagaDocument in docStore.AllDocumentsStartingWith(conversion.SagaDataType, conversion.DocumentPrefix, 1024))
+        foreach (var sagaDocument in docStore.AllDocumentsStartingWith(conversion.DocumentPrefix, 1024))
         {
             var data = sagaDocument.DataAsJson;
             var idString = sagaDocument.Key.Substring(conversion.DocumentPrefix.Length);

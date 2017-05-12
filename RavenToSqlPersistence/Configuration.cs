@@ -20,11 +20,9 @@ static class Configuration
         get
         {
             yield return new SagaConversion(
-                documentPrefix: "SagaDatas/", 
-                sagaDataType: typeof(CreateRavenStuff.SagaData), 
+                documentPrefix: "SagaDatas/",
                 correlationId: "OrderId",
-                endpointName: "RavenToSqlPersistence",
-                sagaClassName: "MyFakeSaga");
+                tableName: "RavenToSqlPersistence_MyFakeSaga");
         }
     }
 

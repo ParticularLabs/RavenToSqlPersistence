@@ -5,44 +5,21 @@ using NServiceBus;
 public class SagaConversion
 {
     public string DocumentPrefix { get; private set; }
-    public Type SagaDataType { get; private set; }
     public string CorrelationId { get; private set; }
-    public string EndpointName { get; private set; }
-    public string SagaClassName { get; private set; }
-    public string TableName { get; private set; } = "RavenToSqlPersistence_MyFakeSaga"; // TODO: Temporary Value
+    public string TableName { get; private set; }
 
-    private readonly PropertyInfo correlationProperty;
-
-    public SagaConversion(string documentPrefix, Type sagaDataType, string correlationId, string endpointName, string sagaClassName)
+    public SagaConversion(string documentPrefix, string correlationId, string tableName)
     {
         if (!documentPrefix.EndsWith("/"))
         {
-            throw new ArgumentException($"documentPrefix for saga type '{sagaDataType.FullName} must end with '/' character.");
-        }
-
-        if(!typeof(IContainSagaData).IsAssignableFrom(sagaDataType))
-        {
-            throw new ArgumentException($"Saga data type {sagaDataType} does not inherit ContainSagaData or implement IContainSagaData.");
-        }
-
-        correlationProperty = sagaDataType.GetProperty(correlationId);
-        if (correlationProperty == null)
-        {
-            throw new ArgumentException($"Could not find correlation property named '{correlationId}' on saga data type '{sagaDataType.FullName}'.");
+            throw new ArgumentException($"documentPrefix '{documentPrefix} must end with '/' character.");
         }
 
         // TODO: More verification of table prefix & class name
 
         DocumentPrefix = documentPrefix;
-        SagaDataType = sagaDataType;
         CorrelationId = correlationId;
-        EndpointName = endpointName;
-        SagaClassName = sagaClassName;
-    }
-
-    public object GetCorrelationValue(IContainSagaData sagaData)
-    {
-        return correlationProperty.GetMethod.Invoke(sagaData, null);
+        TableName = tableName;
     }
 
     public string GetSagaInsertCommandText()

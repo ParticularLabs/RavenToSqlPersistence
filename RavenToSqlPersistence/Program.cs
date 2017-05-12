@@ -28,11 +28,13 @@ namespace RavenToSqlPersistence
 
         static async Task RunAsync()
         {
-            var docStore = DbConfig.ConfigureRavenDB();
+            var docStore = Configuration.ConfigureRavenDb();
             docStore.Initialize();
 
             await SubscriptionConverter.ConvertSubscriptions(docStore);
             await TimeoutConverter.ConvertTimeouts(docStore);
+
+            await EndpointProxy.StopAll();
         }
     }
 }

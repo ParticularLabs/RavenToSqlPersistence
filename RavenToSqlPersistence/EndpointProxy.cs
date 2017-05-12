@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.Configuration.AdvanceExtensibility;
@@ -35,6 +36,14 @@ class EndpointProxy
         return proxy;
     }
 
+    public static Task StopAll()
+    {
+        var proxies = proxyDict.Values.ToList();
+        proxyDict.Clear();
+        var stopTasks = proxies.Select(p => p.Stop());
+        return Task.WhenAll(stopTasks);
+    }
+
     private void Initialize()
     {
         InitializeAsync().GetAwaiter().GetResult();
@@ -54,7 +63,7 @@ class EndpointProxy
         var settings = endpointConfiguration.GetSettings();
         settings.Set<BuilderHolder>(builderHolder);
         
-        DbConfig.ConfigureSqlPersistence(endpointConfiguration);
+        Configuration.ConfigureSqlPersistence(endpointConfiguration);
 
         this.endpoint = await Endpoint.Start(endpointConfiguration)
             .ConfigureAwait(false);
@@ -65,29 +74,11 @@ class EndpointProxy
         var testPersist = builder.Build<IPersistTimeouts>();
     }
 
+    public async Task Stop()
+    {
+        await endpoint.Stop();
+    }
+
     public ISubscriptionStorage SubscriptionStorage => builder.Build<ISubscriptionStorage>();
     public IPersistTimeouts TimeoutStorage => builder.Build<IPersistTimeouts>();
-}
-
-public class FakeTimeoutPoller : IQueryTimeouts
-{
-    public Task<TimeoutsChunk> GetNextChunk(DateTime startSlice)
-    {
-        var emptyChunk = new TimeoutsChunk(new TimeoutsChunk.Timeout[0], DateTime.UtcNow.AddYears(10));
-        return Task.FromResult(emptyChunk);
-    }
-}
-
-public class SwapTimeoutQueryFeature : Feature
-{
-    public SwapTimeoutQueryFeature()
-    {
-        EnableByDefault();
-        this.DependsOn("SqlTimeoutFeature");
-    }
-
-    protected override void Setup(FeatureConfigurationContext context)
-    {
-        context.Container.RegisterSingleton(typeof(IQueryTimeouts), new FakeTimeoutPoller());
-    }
 }

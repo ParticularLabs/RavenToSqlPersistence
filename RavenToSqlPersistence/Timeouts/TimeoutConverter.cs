@@ -9,7 +9,11 @@ static class TimeoutConverter
     {
         using (var session = docStore.OpenAsyncSession())
         {
-            var batch = await session.Advanced.LoadStartingWithAsync<TimeoutData>("TimeoutDatas/", start: 0, pageSize: 1024);
+            var batch = await session.Advanced.LoadStartingWithAsync<TimeoutData>(
+                    keyPrefix: Configuration.TimeoutDocumentsStartWith, 
+                    start: 0, 
+                    pageSize: 1024);
+
             foreach (var timeout in batch)
             {
                 var proxy = EndpointProxy.GetProxy(timeout.OwningTimeoutManager);

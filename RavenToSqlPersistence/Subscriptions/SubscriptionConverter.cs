@@ -22,7 +22,7 @@ static class SubscriptionConverter
         {
             using (var session = docStore.OpenAsyncSession())
             {
-                var batch = await session.Advanced.LoadStartingWithAsync<Subscription>("Subscriptions/",
+                var batch = await session.Advanced.LoadStartingWithAsync<Subscription>(Configuration.SubscriptionDocumentsStartWith,
                     pagingInformation: paging, start: paging.NextPageStart, pageSize: pageSize);
 
                 await ConvertBatch(batch);

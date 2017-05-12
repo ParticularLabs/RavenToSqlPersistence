@@ -43,10 +43,12 @@ class EndpointProxy
     private async Task InitializeAsync()
     {
         var endpointConfiguration = new EndpointConfiguration(endpointName);
-        endpointConfiguration.UseTransport<MsmqTransport>();
-        //endpointConfiguration.SendOnly();
+        endpointConfiguration.UseTransport<FakeTransport>();
         endpointConfiguration.SendFailedMessagesTo("error");
-        endpointConfiguration.EnableFeature<TimeoutManager>();
+
+        var nsbAssembly = typeof(Endpoint).Assembly;
+        endpointConfiguration.DisableFeature(nsbAssembly.GetType("NServiceBus.Features.ReceiveStatisticsPerformanceCounters"));
+        endpointConfiguration.DisableFeature(nsbAssembly.GetType("NServiceBus.ReceiveStatisticsFeature"));
 
         var builderHolder = new BuilderHolder();
         var settings = endpointConfiguration.GetSettings();
@@ -58,8 +60,34 @@ class EndpointProxy
             .ConfigureAwait(false);
 
         this.builder = builderHolder.Builder;
+
+        var testQuery = builder.Build<IQueryTimeouts>();
+        var testPersist = builder.Build<IPersistTimeouts>();
     }
 
     public ISubscriptionStorage SubscriptionStorage => builder.Build<ISubscriptionStorage>();
     public IPersistTimeouts TimeoutStorage => builder.Build<IPersistTimeouts>();
+}
+
+public class FakeTimeoutPoller : IQueryTimeouts
+{
+    public Task<TimeoutsChunk> GetNextChunk(DateTime startSlice)
+    {
+        var emptyChunk = new TimeoutsChunk(new TimeoutsChunk.Timeout[0], DateTime.UtcNow.AddYears(10));
+        return Task.FromResult(emptyChunk);
+    }
+}
+
+public class SwapTimeoutQueryFeature : Feature
+{
+    public SwapTimeoutQueryFeature()
+    {
+        EnableByDefault();
+        this.DependsOn("SqlTimeoutFeature");
+    }
+
+    protected override void Setup(FeatureConfigurationContext context)
+    {
+        context.Container.RegisterSingleton(typeof(IQueryTimeouts), new FakeTimeoutPoller());
+    }
 }

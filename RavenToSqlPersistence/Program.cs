@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using NServiceBus;
-using NServiceBus.Configuration.AdvanceExtensibility;
-using NServiceBus.Features;
-using NServiceBus.ObjectBuilder;
-using NServiceBus.Persistence.Sql;
-using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
-using Raven.Client.Document;
+using NServiceBus.Logging;
+
 
 namespace RavenToSqlPersistence
 {
@@ -18,6 +9,8 @@ namespace RavenToSqlPersistence
     {
         static void Main(string[] args)
         {
+            //LogManager.Use<DefaultFactory>().Level(LogLevel.Debug);
+
             try
             {
                 RunAsync().GetAwaiter().GetResult();

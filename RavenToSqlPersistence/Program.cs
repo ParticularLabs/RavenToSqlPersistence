@@ -9,7 +9,7 @@ namespace RavenToSqlPersistence
     {
         static void Main(string[] args)
         {
-            //LogManager.Use<DefaultFactory>().Level(LogLevel.Debug);
+            LogManager.Use<DefaultFactory>().Level(LogLevel.Warn);
 
             try
             {

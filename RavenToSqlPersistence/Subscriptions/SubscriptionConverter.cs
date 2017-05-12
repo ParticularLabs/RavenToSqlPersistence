@@ -15,17 +15,31 @@ static class SubscriptionConverter
 {
     public static async Task ConvertSubscriptions(DocumentStore docStore)
     {
-        using (var session = docStore.OpenAsyncSession())
+        var paging = new RavenPagingInformation();
+        int pageSize = 1024;
+
+        do
         {
-            var batch = await session.Advanced.LoadStartingWithAsync<Subscription>("Subscriptions/", start: 0, pageSize: 1024);
-            foreach (var sub in batch)
+            using (var session = docStore.OpenAsyncSession())
             {
-                foreach (var client in sub.Subscribers)
-                {
-                    var newSubscriber = new Subscriber(client.TransportAddress, client.Endpoint);
-                    var proxy = EndpointProxy.GetProxy(client.Endpoint);
-                    await proxy.SubscriptionStorage.Subscribe(newSubscriber, sub.MessageType, new ContextBag());
-                }
+                var batch = await session.Advanced.LoadStartingWithAsync<Subscription>("Subscriptions/",
+                    pagingInformation: paging, start: paging.NextPageStart, pageSize: pageSize);
+
+                await ConvertBatch(batch);
+            }
+        } while (!paging.IsLastPage());
+    }
+
+    private static async Task ConvertBatch(IEnumerable<Subscription> batch)
+    {
+        foreach (var sub in batch)
+        {
+            Console.WriteLine($"Converting subscriptions for {sub.MessageType.TypeName}");
+            foreach (var client in sub.Subscribers)
+            {
+                var newSubscriber = new Subscriber(client.TransportAddress, client.Endpoint);
+                var proxy = EndpointProxy.GetProxy(client.Endpoint);
+                await proxy.SubscriptionStorage.Subscribe(newSubscriber, sub.MessageType, new ContextBag());
             }
         }
     }

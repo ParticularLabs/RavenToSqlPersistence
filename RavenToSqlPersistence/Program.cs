@@ -15,14 +15,17 @@ namespace RavenToSqlPersistence
             try
             {
                 RunAsync().GetAwaiter().GetResult();
+                Console.WriteLine("Conversion tool complete. Press Enter to exit.");
             }
             catch (Exception e)
             {
+                Console.WriteLine("An error has occurred:");
                 Console.WriteLine(e);
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to exit.");
             }
             finally
             {
-                Console.WriteLine("Conversion tool complete. Press Enter to exit.");
                 Console.ReadLine();
             }
         }

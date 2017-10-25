@@ -95,7 +95,7 @@ When already configured to use SQL Persistence, the CorrelationId already must b
 // Endpoint using SQL Persistence with SqlSaga<T>
 protected override string CorrelationPropertyName => nameof(SagaData.OrderId);
 // OR
-protected override string CorrelationPropertyName => nameof("OrderId");
+protected override string CorrelationPropertyName => "OrderId";
 ```
 
 In both of these cases, `OrderId` is the correlationId.

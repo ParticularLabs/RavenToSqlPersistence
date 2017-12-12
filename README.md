@@ -1,7 +1,7 @@
 # RavenToSqlPersistence
 Conversion utility for NServiceBus data from [RavenDB Persistence](https://docs.particular.net/persistence/ravendb/) to [SQL Persistence](https://docs.particular.net/persistence/sql/).
 
-_**NOTE: This tool is not a push-button conversion. The code must be modified to match settings in your unique environment.**_
+_**NOTE: This tool is not a push-button conversion. The code must be modified to match settings in your unique environment. Additionally, SQL Persistence supports only NServiceBus 6 and greater.**_
 
 ## How it works
 

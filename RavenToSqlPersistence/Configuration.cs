@@ -30,7 +30,7 @@ static class Configuration
     {
         var docStore = new DocumentStore()
         {
-            Url = "http://localhost:8084",
+            Url = "http://localhost:8080",
             DefaultDatabase = "RavenToSqlPersistence",
 
         };
@@ -39,7 +39,6 @@ static class Configuration
         return docStore;
     }
 
-    public const SqlVariant DestinationSqlType = SqlVariant.MsSqlServer;
 
     public static Func<DbConnection> CreateSqlConnection = () =>
     {

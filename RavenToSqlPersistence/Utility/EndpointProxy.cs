@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using NServiceBus;
-using NServiceBus.Configuration.AdvanceExtensibility;
+using NServiceBus.Configuration.AdvancedExtensibility;
 using NServiceBus.ObjectBuilder;
 using NServiceBus.Persistence.Sql;
 using NServiceBus.Sagas;
@@ -66,7 +66,7 @@ class EndpointProxy
         settings.Set<BuilderHolder>(builderHolder);
 
         var persistence = endpointConfiguration.UsePersistence<SqlPersistence>();
-        persistence.SqlVariant(Configuration.DestinationSqlType);
+        persistence.SqlDialect<SqlDialect.MsSqlServer>();
         persistence.ConnectionBuilder(Configuration.CreateSqlConnection);
         persistence.SubscriptionSettings().DisableCache();
 

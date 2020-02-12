@@ -80,6 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Converters\LegacyAddress.cs" />
+    <Compile Include="Converters\TimeoutDataV1toV2Converter.cs" />
     <Compile Include="Utility\EndpointProxy.cs" />
     <Compile Include="FakeInfrastructure\FakeTimeoutPoller.cs" />
     <Compile Include="FakeInfrastructure\FakeTransport.cs" />

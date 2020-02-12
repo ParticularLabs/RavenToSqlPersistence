@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NServiceBus.Logging;
 
-
 namespace RavenToSqlPersistence
 {
     static class Program
@@ -36,6 +35,7 @@ namespace RavenToSqlPersistence
 
             var docStore = Configuration.ConfigureRavenDb();
             docStore.Initialize();
+            docStore.Listeners.RegisterListener(new NServiceBus.Persistence.RavenDB.TimeoutDataV1toV2Converter());
 
             await SubscriptionConverter.ConvertSubscriptions(docStore);
             await TimeoutConverter.ConvertTimeouts(docStore);

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RavenToSqlPersistence", "RavenToSqlPersistence\RavenToSqlPersistence.csproj", "{24844F2C-9CEB-4607-A696-D71E1E7475A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seeder", "Seeder\Seeder.csproj", "{3BE1E023-6E98-4FFC-9FCE-82F9A316C155}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{24844F2C-9CEB-4607-A696-D71E1E7475A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24844F2C-9CEB-4607-A696-D71E1E7475A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24844F2C-9CEB-4607-A696-D71E1E7475A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE1E023-6E98-4FFC-9FCE-82F9A316C155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE1E023-6E98-4FFC-9FCE-82F9A316C155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE1E023-6E98-4FFC-9FCE-82F9A316C155}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE1E023-6E98-4FFC-9FCE-82F9A316C155}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D57F784B-CB5B-437D-BEDE-3847E55CDEF2}
 	EndGlobalSection
 EndGlobal

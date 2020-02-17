@@ -15,6 +15,8 @@ static class TimeoutConverter
 {
     public static async Task ConvertTimeouts(DocumentStore docStore)
     {
+        var ignoreMachineName = true; // Must be true for RabbitMQ
+
         var senderConfig = RawEndpointConfiguration.CreateSendOnly("DUMMY");
         var t = senderConfig.UseTransport<RabbitMQTransport>();
         t.ConnectionString("host=localhost");
@@ -31,11 +33,22 @@ static class TimeoutConverter
             var timestamp = timeout.Time;
             var destination = timeout.Destination;
 
+            if (ignoreMachineName)
+            {
+                var at = destination.LastIndexOf("@", StringComparison.InvariantCulture);
+
+                if (at != -1)
+                {
+                    destination = destination.Substring(0, at);
+                }
+            }
+
             var request = new OutgoingMessage(
                 messageId: timeout.Id,
                 headers: headers,
                 body: body
                 );
+
 
             var operation = new TransportOperation(
                 request,
